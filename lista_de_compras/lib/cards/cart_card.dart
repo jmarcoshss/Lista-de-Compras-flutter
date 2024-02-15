@@ -20,7 +20,7 @@ class CartCard extends StatelessWidget {
             width: 200,
             child: Text(
               name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle( fontWeight: FontWeight.bold),
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             )),
@@ -34,7 +34,7 @@ class CartCard extends StatelessWidget {
         ),
         Text(
           "R\$: $totalValue",
-          style: TextStyle(color: Colors.green),
+          style: const TextStyle(color: Colors.green),
         )
       ],
     );
