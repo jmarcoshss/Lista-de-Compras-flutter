@@ -10,6 +10,7 @@ Map<int, String> scripts = {
   2: ''' CREATE TABLE productlist (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           listid INTEGER,
+          listName TEXT,          
           name TEXT,          
           price INTEGER,          
           unity TEXT,          

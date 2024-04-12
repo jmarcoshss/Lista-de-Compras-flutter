@@ -43,7 +43,15 @@ class _CartPageState extends State<CartPage> {
           totalPrice += element.price * element.amount;
         }
       }
-      return totalPrice.toString();
+      return totalPrice.toStringAsFixed(2);
+    }
+
+    bool haveList() {
+      if (_cart.isEmpty) {
+        return false;
+      } else {
+        return true;
+      }
     }
 
     return Scaffold(
@@ -63,79 +71,86 @@ class _CartPageState extends State<CartPage> {
         ],
       ),
       body: Center(
-        child: ListView.builder(
-            itemCount: _cart.length,
-            itemBuilder: (BuildContext bc, int index) {
-              var cart = _cart[index];
-              return InkWell(
-                onTap: () {
-                  transition(
-                    context,
-                    ProductPage(
-                      listid: cart.id,
+        child: haveList()
+            ? ListView.builder(
+                itemCount: _cart.length,
+                itemBuilder: (BuildContext bc, int index) {
+                  var cart = _cart[index];
+                  return InkWell(
+                    onTap: () {
+                      transition(
+                        context,
+                        ProductPage(
+                          listid: cart.id,
+                          listName: cart.name
+                        ),
+                      );
+                    },
+                    child: Card(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        content: Text(
+                                            'Deseja Excluir ${cart.name}? essa ação excluirá todos os produtos da lista.'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                productRepository
+                                                    .removechild(cart.id);
+                                                cartRepository.remove(cart.id);
+                                                loadData();
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Confirmar')),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Cancelar'))
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              )),
+                          CartCard(
+                            name: cart.name,
+                            descripton: cart.description,
+                            totalValue: totalPriceCalculator(cart.id),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                transition(
+                                    context,
+                                    CartFormpage(
+                                      type: 2,
+                                      id: cart.id,
+                                      name: cart.name,
+                                      descripition: cart.description,
+                                    ));
+                              },
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.green,
+                              ))
+                        ],
+                      ),
                     ),
                   );
-                },
-                child: Card(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Text(
-                                        'Deseja Excluir ${cart.name}? essa ação excluirá todos os produtos da lista.'),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            productRepository
-                                                .removechild(cart.id);
-                                            cartRepository.remove(cart.id);
-                                            loadData();
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Confirmar')),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Cancelar'))
-                                    ],
-                                  );
-                                });
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          )),
-                      CartCard(
-                        name: cart.name,
-                        descripton: cart.description,
-                        totalValue: totalPriceCalculator(cart.id),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            transition(
-                                context,
-                                CartFormpage(
-                                  type: 2,
-                                  id: cart.id,
-                                  name: cart.name,
-                                  descripition: cart.description,
-                                ));
-                          },
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.green,
-                          ))
-                    ],
-                  ),
-                ),
-              );
-            }),
+                })
+            : const Text(
+                'Você não tem nenhuma lista, para criar uma lista, clique no + na parte superior da tela',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, color: Colors.black38),
+              ),
       ),
     );
   }

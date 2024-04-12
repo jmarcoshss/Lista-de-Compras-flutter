@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class CartCard extends StatelessWidget {
-  CartCard(
+ const CartCard(
       {super.key,
       required this.name,
       required this.descripton,
       required this.totalValue});
 
-  String name = '';
-  String descripton = '';
-  String totalValue = '';
+  final String name;
+  final String descripton;
+  final String totalValue;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class CartCard extends StatelessWidget {
           ),
         ),
         Text(
-          "R\$: $totalValue",
+          "R\$: ${totalValue.replaceAll(RegExp(r'[.]'), ',')}",
           style: const TextStyle(color: Colors.green),
         )
       ],

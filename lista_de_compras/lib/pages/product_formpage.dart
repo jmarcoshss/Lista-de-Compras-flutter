@@ -6,12 +6,13 @@ import 'package:lista_de_compras/pages/product_page.dart';
 import 'package:lista_de_compras/repositories/product_repository.dart';
 import 'package:lista_de_compras/widget/transition.dart';
 
-class ProductFormpage extends StatelessWidget {
+class ProductFormpage extends StatefulWidget {
   ProductFormpage({
     super.key,
     this.id,
     required this.listid,
     required this.type,
+    required this.listName,
     this.name,
     this.price,
     this.unity,
@@ -20,11 +21,18 @@ class ProductFormpage extends StatelessWidget {
 
   int? id = 0;
   int listid = 0;
+  String listName = '';
   String? name = '';
   String? price = '';
   String? unity = '';
   String? amount = '';
   int type;
+
+  @override
+  State<ProductFormpage> createState() => _ProductFormpageState();
+}
+
+class _ProductFormpageState extends State<ProductFormpage> {
   String title = '';
   TextEditingController namecontroller = TextEditingController();
   TextEditingController pricecontroller = TextEditingController();
@@ -32,11 +40,20 @@ class ProductFormpage extends StatelessWidget {
   TextEditingController amountcontroller = TextEditingController();
   ProductRepository productRepository = ProductRepository();
 
+  late FocusNode nameFocus;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameFocus = FocusNode();
+  }
+
   @override
   Widget build(BuildContext context) {
     String editingController(
         TextEditingController controller, String? content) {
-      if (type == 2) {
+      if (widget.type == 2) {
         return controller.text = content!;
       } else {
         return controller.text;
@@ -44,17 +61,17 @@ class ProductFormpage extends StatelessWidget {
     }
 
     String titleManager() {
-      if (type == 1) {
-        return title = 'Novo Produto';
+      if (widget.type == 1) {
+        return title = 'Novo Produto para ${widget.listName}';
       } else {
-        return title = 'Editando produto $name';
+        return title = 'Editando produto ${widget.name}';
       }
     }
 
-    namecontroller.text = editingController(namecontroller, name);
-    pricecontroller.text = editingController(pricecontroller, price);
-    unitycontroller.text = editingController(unitycontroller, unity);
-    amountcontroller.text = editingController(amountcontroller, amount);
+    namecontroller.text = editingController(namecontroller, widget.name);
+    pricecontroller.text = editingController(pricecontroller, widget.price);
+    unitycontroller.text = editingController(unitycontroller, widget.unity);
+    amountcontroller.text = editingController(amountcontroller, widget.amount);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,47 +83,75 @@ class ProductFormpage extends StatelessWidget {
           child: Column(
             children: [
               TextField(
+                focusNode: nameFocus,
                 autofocus: true,
                 decoration: const InputDecoration(
-                    border: OutlineInputBorder(), label: Text('Nome')),
+                    border: OutlineInputBorder(), hintText: 'Nome'),
                 controller: namecontroller,
               ),
               const SizedBox(
                 height: 8,
               ),
               TextField(
-                onTap: () {
-                  pricecontroller.text = '';
-                },
                 decoration: const InputDecoration(
-                    border: OutlineInputBorder(), label: Text('Preço')),
+                    border: OutlineInputBorder(), hintText: 'Preço'),
                 keyboardType: TextInputType.number,
                 controller: pricecontroller,
+                
               ),
               const SizedBox(
                 height: 8,
               ),
-              TextField(
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(), label: Text('Unidade')),
-                controller: unitycontroller,
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(2),
+                  boxShadow: List.empty()
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      height: 62,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Quantidade'),
+                        keyboardType: TextInputType.number,
+                        controller: amountcontroller,
+                      ),
+                    ),
+                    DropdownButton(
+                      elevation: 0,
+                      hint: const Text('Unidade'),
+                      value: widget.unity,
+                      items: const [
+                        DropdownMenuItem<String>(
+                          value: 'Kg',
+                          child: Text('Kilograma'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'Un',
+                          child: Text('Unidades'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'L',
+                          child: Text('Litros'),
+                        ),
+                      ],
+                      onChanged: (value) => setState(
+                        () => unitycontroller.text = widget.unity = value!,
+                      ),
+                    ),
+                    
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 8,
               ),
-              TextField(
-                onTap: () {
-                  amountcontroller.text = '';
-                },
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(), label: Text('Quantidade')),
-                keyboardType: TextInputType.number,
-                controller: amountcontroller,
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              type == 1
+              widget.type == 1
                   ? Column(
                       children: [
                         ElevatedButton(
@@ -124,27 +169,35 @@ class ProductFormpage extends StatelessWidget {
                                   productRepository.save(
                                     ProductModel(
                                       0,
-                                      listid,
+                                      widget.listid,
+                                      widget.listName,
                                       namecontroller.text,
-                                      double.parse(
-                                          emptyEqualZero(pricecontroller)),
+                                      double.parse(emptyEqualZero(
+                                          pricecontroller.text
+                                              .replaceFirst(RegExp(","), "."))),
                                       unitycontroller.text,
-                                      double.parse(
-                                          emptyEqualZero(amountcontroller)),
+                                      double.parse(emptyEqualZero(
+                                          amountcontroller.text)),
                                       false,
                                     ),
                                   );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      duration: Duration(seconds: 3),
+                                      content: Text('Produto salvo'),
+                                    ),
+                                  );
+                                  nameFocus.requestFocus();
                                   namecontroller.text = '';
-                                  pricecontroller.text = '0.0';
-                                  unitycontroller.text = '';
-                                  amountcontroller.text = '0.0';
+                                  pricecontroller.text = '';
+                                  amountcontroller.text = '';
                                 }
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     duration: Duration(seconds: 3),
                                     content: Text(
-                                        'Por favor digite as frações do preço e da quantidade unsando ".". Ex: 2.25 '),
+                                        'Por favor digite as frações do preço e da quantidade usando somente "." ou ",". Ex: 2.25 ou 2,25 '),
                                   ),
                                 );
                               }
@@ -155,10 +208,11 @@ class ProductFormpage extends StatelessWidget {
                               transition(
                                   context,
                                   ProductPage(
-                                    listid: listid,
+                                    listName: widget.listName,
+                                    listid: widget.listid,
                                   ));
                             },
-                            child: const Text('voltar para o carrinho'))
+                            child: const Text('Voltar para a tela anterior'))
                       ],
                     )
                   : ElevatedButton(
@@ -175,12 +229,15 @@ class ProductFormpage extends StatelessWidget {
                           } else {
                             productRepository.update(
                               ProductModel(
-                                id!,
-                                listid,
+                                widget.id!,
+                                widget.listid,
+                                widget.listName,
                                 namecontroller.text,
-                                double.parse(emptyEqualZero(pricecontroller)),
+                                double.parse(emptyEqualZero(pricecontroller.text
+                                    .replaceFirst(RegExp(","), "."))),
                                 unitycontroller.text,
-                                double.parse(emptyEqualZero(amountcontroller)),
+                                double.parse(
+                                    emptyEqualZero(amountcontroller.text)),
                                 false,
                               ),
                             );
@@ -190,14 +247,15 @@ class ProductFormpage extends StatelessWidget {
                             const SnackBar(
                               duration: Duration(seconds: 3),
                               content: Text(
-                                  'Por favor digite as frações do preço e da quantidade unsando ".". Ex: 2.25 '),
+                                  'Por favor digite as frações do preço e da quantidade unsando "." ou ",". Ex: 2.25 '),
                             ),
                           );
                         }
                         transition(
                             context,
                             ProductPage(
-                              listid: listid,
+                              listName: widget.listName,
+                              listid: widget.listid,
                             ));
                       },
                       child: const Text('salvar'))
@@ -208,12 +266,12 @@ class ProductFormpage extends StatelessWidget {
     );
   }
 
-  String emptyEqualZero(TextEditingController controller) {
-    if (controller.text == '') {
-      controller.text = '0.0';
+  String emptyEqualZero(String controller) {
+    if (controller == '') {
+      controller = '0.0';
     } else {
-      controller.text = controller.text;
+      controller = controller;
     }
-    return controller.text;
+    return controller;
   }
 }

@@ -3,16 +3,18 @@ import 'package:lista_de_compras/models/product_model.dart';
 
 class ProductRepository {
   
-  Future<List<ProductModel>> getProductDatabase(int cartlistid) async {
+  Future<List<ProductModel>> getProductDatabase(int cartlistid, bool onlyChecked) async {
     List<ProductModel> productlist = [];
     var db = await ListaDeComprasDataBase().getDatabase();
     var result = await db.rawQuery(
-        'SELECT id, listid, name, price, unity, amount, checked FROM productlist WHERE listid = $cartlistid');
+      onlyChecked ? 'SELECT id, listid, listName, name, price, unity, amount, checked FROM productlist WHERE checked = 0 AND listid = $cartlistid':
+        'SELECT id, listid, listName, name, price, unity, amount, checked FROM productlist WHERE listid = $cartlistid');
     for (var element in result) {
       productlist.add(
         ProductModel(
             int.parse(element['id'].toString()),
             int.parse(element['listid'].toString()),
+            element['listName'].toString(),
             element['name'].toString(),
             double.parse(element['price'].toString()),
             element['unity'].toString(),
@@ -27,12 +29,13 @@ class ProductRepository {
     List<ProductModel> productlist = [];
     var db = await ListaDeComprasDataBase().getDatabase();
     var result = await db.rawQuery(
-        'SELECT id, listid, name, price, unity, amount, checked FROM productlist WHERE listid = listid');
+        'SELECT id, listid, listName, name, price, unity, amount, checked FROM productlist WHERE listid = listid');
     for (var element in result) {
       productlist.add(
         ProductModel(
             int.parse(element['id'].toString()),
             int.parse(element['listid'].toString()),
+            element['listName'].toString(),
             element['name'].toString(),
             double.parse(element['price'].toString()),
             element['unity'].toString(),
@@ -48,9 +51,10 @@ class ProductRepository {
   Future<void> save(ProductModel product) async {
     var db = await ListaDeComprasDataBase().getDatabase();
     await db.rawInsert(
-        'INSERT INTO productlist(listid, name, price, unity, amount, checked) values(?,?,?,?,?,?)',
+        'INSERT INTO productlist(listid, listName, name, price, unity, amount, checked) values(?,?,?,?,?,?,?)',
         [
           product.listid,
+          product.listName,
           product.name,
           product.price,
           product.unity,
@@ -71,9 +75,10 @@ class ProductRepository {
   Future<void> update(ProductModel productModel) async {
     var db = await ListaDeComprasDataBase().getDatabase();
     await db.rawInsert(
-        'UPDATE productlist SET name = ?, listid = ?, price = ?, unity = ?, amount = ?, checked = ? WHERE id = ?',
+        'UPDATE productlist SET name = ?, listName = ?, listid = ?, price = ?, unity = ?, amount = ?, checked = ? WHERE id = ?',
         [
           productModel.name,
+          productModel.listName,
           productModel.listid,
           productModel.price,
           productModel.unity,

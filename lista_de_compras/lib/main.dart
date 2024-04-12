@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lista_de_compras/pages/cart_page.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -8,6 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       debugShowCheckedModeBanner: false,
       title: 'Lista de Compras',
       theme: ThemeData(

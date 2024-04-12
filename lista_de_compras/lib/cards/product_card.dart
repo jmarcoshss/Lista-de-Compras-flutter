@@ -19,9 +19,13 @@ class ProductCard extends StatelessWidget {
   final bool checked;
   final int id;
   final int listid;
+  
+
+  
 
   @override
   Widget build(BuildContext context) {
+    var result = price*amount;
     return SizedBox(
       height: 120,
      
@@ -36,20 +40,24 @@ class ProductCard extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 140,
-                  child: Text(name, overflow: TextOverflow.ellipsis,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 18),)),
+                  child: Text(name, overflow: TextOverflow.ellipsis,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 18),)),
                 Visibility(visible: checked, child: const Icon(Icons.check))
               ],
             ),
             const SizedBox(
-              height: 10,
+              height: 5,
             ),
-            Text("R\$:${price.toStringAsFixed(2)}"),
+            Text("R\$ ${price.toStringAsFixed(2).replaceAll(RegExp(r'[.]'), ',')} por $unity"),
             const SizedBox(
-              height: 10,
+              height: 5,
             ),
             Row(
-              children: [Text('$unity : '), Text(amount.toStringAsFixed(2))],
+              children: [ Text(amount.toStringAsFixed(2).replaceAll(RegExp(r'[.]'), ',')), Text(' $unity')],
             ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text('R\$ ${result.toStringAsFixed(2).replaceAll(RegExp(r'[.]'), ',')}')
           ],
         ),
       ),

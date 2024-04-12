@@ -1,6 +1,7 @@
 class ProductModel {
   int _id = 0;
   int _listid = 0;
+  String _listName = '';
   String _name = '';
   double _price = 0.0;
   String _unity = '';
@@ -9,6 +10,7 @@ class ProductModel {
   ProductModel(
     this._id,
     this._listid,
+    this._listName,
     this._name,
     this._price,
     this._unity,
@@ -18,6 +20,7 @@ class ProductModel {
 
   int get id => _id;
   int get listid => _listid;
+  String get listName => _listName;
   String get name => _name;
   double get price => _price;
   String get unity => _unity;
@@ -32,6 +35,9 @@ class ProductModel {
   }
   set name (String name){
     _name = name;
+  }
+  set listName (String listName){
+    _listName = listName;
   }
   set price(double price){
     _price = price;
