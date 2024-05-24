@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:lista_de_compras/models/cart_model.dart';
 import 'package:lista_de_compras/pages/cart_page.dart';
 import 'package:lista_de_compras/repositories/cart_repository.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:lista_de_compras/widget/transition.dart';
 
-class CartFormpage extends StatelessWidget {
+class CartFormpage extends StatefulWidget {
   CartFormpage(
       {super.key, required this.type, this.id, this.name, this.descripition});
 
@@ -14,14 +14,22 @@ class CartFormpage extends StatelessWidget {
   int? id;
   String? name;
   String? descripition;
+
+  @override
+  State<CartFormpage> createState() => _CartFormpageState();
+}
+
+class _CartFormpageState extends State<CartFormpage> {
   String title = '';
 
   TextEditingController namecontroller = TextEditingController();
+
   TextEditingController descriptioncontroller = TextEditingController();
+
   CartRepository cartRepository = CartRepository();
 
   String editingController(TextEditingController controller, String? content) {
-    if (type == 2) {
+    if (widget.type == 2) {
       return controller.text = content!;
     } else {
       return controller.text;
@@ -29,36 +37,25 @@ class CartFormpage extends StatelessWidget {
   }
 
   String titleManager() {
-    if (type == 1) {
+    if (widget.type == 1) {
       return title = 'Nova Lista';
     } else {
-      return title = 'Editando lista $name';
+      return title = 'Editando lista ${widget.name}';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    namecontroller.text = editingController(namecontroller, name);
+    namecontroller.text = editingController(namecontroller, widget.name);
     descriptioncontroller.text =
-        editingController(descriptioncontroller, descripition);
+        editingController(descriptioncontroller, widget.descripition);
     void close() {
-      Navigator.pushReplacement(
-        context,
-        PageTransition(
-            child: const CartPage(), type: PageTransitionType.bottomToTop),
-      );
+      transition(context, const CartPage());
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(titleManager()),
-        actions: [
-          IconButton(
-              onPressed: () {
-                close();
-              },
-              icon: const Icon(Icons.exit_to_app))
-        ],
       ),
       body: ListView(children: [
         Padding(
@@ -66,6 +63,7 @@ class CartFormpage extends StatelessWidget {
           child: Column(
             children: [
               TextField(
+                autofocus: true,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(), label: Text('Nome')),
                 controller: namecontroller,
@@ -83,7 +81,7 @@ class CartFormpage extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () async {
-                    if (type == 1) {
+                    if (widget.type == 1) {
                       if (namecontroller.text == '') {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -100,7 +98,7 @@ class CartFormpage extends StatelessWidget {
                               descriptioncontroller.text,
                             ),
                           );
-                          close();
+                          
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -109,6 +107,7 @@ class CartFormpage extends StatelessWidget {
                             ),
                           );
                         }
+                        close();
                       }
                     } else {
                       if (namecontroller.text == '') {
@@ -121,7 +120,7 @@ class CartFormpage extends StatelessWidget {
                       } else {
                         await cartRepository.update(
                           CartModel(
-                            id!,
+                            widget.id!,
                             namecontroller.text,
                             descriptioncontroller.text,
                           ),

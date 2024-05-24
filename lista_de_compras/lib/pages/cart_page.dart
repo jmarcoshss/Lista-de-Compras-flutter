@@ -59,13 +59,19 @@ class _CartPageState extends State<CartPage> {
         title: const Text('Listas'),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CartFormpage(
-                              type: 1,
-                            )));
+              onPressed: ()async {
+                await showModalBottomSheet<bool?>(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    builder: (context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: CartFormpage(type: 1),
+                      );
+                    }).whenComplete(() => loadData());
               },
               icon: const Icon(Icons.add))
         ],

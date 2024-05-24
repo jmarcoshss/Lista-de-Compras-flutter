@@ -59,12 +59,10 @@ class _ProductPageState extends State<ProductPage> {
 
     String emptyScreenTextSelector() {
       if (_product.isEmpty && onlyChecked == true) {
-        return'Você não tem nenhum item desmarcado nessa lista';
+        return 'Você não tem nenhum item desmarcado nessa lista';
       } else {
-        return
-            'Você não adicionou nenhum produto, para adicionar um produto, clique no + na parte superior da tela';
+        return 'Você não adicionou nenhum produto, para adicionar um produto, clique no + na parte superior da tela';
       }
-     
     }
 
     return Scaffold(
@@ -80,19 +78,22 @@ class _ProductPageState extends State<ProductPage> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                transition(context, const CartPage());
-              },
-              icon: const Icon(Icons.exit_to_app)),
-          IconButton(
-              onPressed: () {
-                transition(
-                    context,
-                    ProductFormpage(
-                      listid: widget.listid,
-                      type: 1,
-                      listName: widget.listName,
-                    ));
+              onPressed: () async {
+                await showModalBottomSheet<bool?>(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    builder: (context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: ProductFormpage(
+                            listid: widget.listid,
+                            type: 1,
+                            listName: widget.listName),
+                      );
+                    }).whenComplete(() => loadData());
               },
               icon: const Icon(Icons.add)),
         ],

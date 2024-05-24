@@ -74,195 +74,183 @@ class _ProductFormpageState extends State<ProductFormpage> {
     amountcontroller.text = editingController(amountcontroller, widget.amount);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(titleManager()),
-      ),
-      body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              TextField(
-                focusNode: nameFocus,
-                autofocus: true,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Nome'),
-                controller: namecontroller,
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Preço'),
-                keyboardType: TextInputType.number,
-                controller: pricecontroller,
-                
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Container(
-                decoration: BoxDecoration(
+      
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TextField(
+              focusNode: nameFocus,
+              autofocus: true,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Nome'),
+              controller: namecontroller,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Preço'),
+              keyboardType: TextInputType.number,
+              controller: pricecontroller,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Container(
+              decoration: BoxDecoration(
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(2),
-                  boxShadow: List.empty()
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: 200,
-                      height: 62,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Quantidade'),
-                        keyboardType: TextInputType.number,
-                        controller: amountcontroller,
-                      ),
+                  boxShadow: List.empty()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    height: 62,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          border: InputBorder.none, hintText: 'Quantidade'),
+                      keyboardType: TextInputType.number,
+                      controller: amountcontroller,
                     ),
-                    DropdownButton(
-                      elevation: 0,
-                      hint: const Text('Unidade'),
-                      value: widget.unity,
-                      items: const [
-                        DropdownMenuItem<String>(
-                          value: 'Kg',
-                          child: Text('Kilograma'),
-                        ),
-                        DropdownMenuItem<String>(
-                          value: 'Un',
-                          child: Text('Unidades'),
-                        ),
-                        DropdownMenuItem<String>(
-                          value: 'L',
-                          child: Text('Litros'),
-                        ),
-                      ],
-                      onChanged: (value) => setState(
-                        () => unitycontroller.text = widget.unity = value!,
+                  ),
+                  DropdownButton(
+                    elevation: 0,
+                    hint: const Text('Unidade'),
+                    value: widget.unity,
+                    items: const [
+                      DropdownMenuItem<String>(
+                        value: 'Kg',
+                        child: Text('Kilograma'),
                       ),
+                      DropdownMenuItem<String>(
+                        value: 'Un',
+                        child: Text('Unidades'),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: 'L',
+                        child: Text('Litros'),
+                      ),
+                    ],
+                    onChanged: (value) => setState(
+                      () => unitycontroller.text = widget.unity = value!,
                     ),
-                    
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 8,
-              ),
-              widget.type == 1
-                  ? Column(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              try {
-                                if (namecontroller.text == '') {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      duration: Duration(seconds: 3),
-                                      content: Text(
-                                          'Por favor digite o nome do produto '),
-                                    ),
-                                  );
-                                } else {
-                                  productRepository.save(
-                                    ProductModel(
-                                      0,
-                                      widget.listid,
-                                      widget.listName,
-                                      namecontroller.text,
-                                      double.parse(emptyEqualZero(
-                                          pricecontroller.text
-                                              .replaceFirst(RegExp(","), "."))),
-                                      unitycontroller.text,
-                                      double.parse(emptyEqualZero(
-                                          amountcontroller.text)),
-                                      false,
-                                    ),
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      duration: Duration(seconds: 3),
-                                      content: Text('Produto salvo'),
-                                    ),
-                                  );
-                                  nameFocus.requestFocus();
-                                  namecontroller.text = '';
-                                  pricecontroller.text = '';
-                                  amountcontroller.text = '';
-                                }
-                              } catch (e) {
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            widget.type == 1
+                ? Column(
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            try {
+                              if (namecontroller.text == '') {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     duration: Duration(seconds: 3),
                                     content: Text(
-                                        'Por favor digite as frações do preço e da quantidade usando somente "." ou ",". Ex: 2.25 ou 2,25 '),
+                                        'Por favor digite o nome do produto '),
                                   ),
                                 );
+                              } else {
+                                productRepository.save(
+                                  ProductModel(
+                                    0,
+                                    widget.listid,
+                                    widget.listName,
+                                    namecontroller.text,
+                                    double.parse(emptyEqualZero(pricecontroller
+                                        .text
+                                        .replaceFirst(RegExp(","), "."))),
+                                    unitycontroller.text,
+                                    double.parse(
+                                        emptyEqualZero(amountcontroller.text)),
+                                    false,
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(seconds: 3),
+                                    content: Text('Produto salvo'),
+                                  ),
+                                );
+                                nameFocus.requestFocus();
+                                namecontroller.text = '';
+                                pricecontroller.text = '';
+                                amountcontroller.text = '';
                               }
-                            },
-                            child: const Text('Salvar')),
-                        TextButton(
-                            onPressed: () {
-                              transition(
-                                  context,
-                                  ProductPage(
-                                    listName: widget.listName,
-                                    listid: widget.listid,
-                                  ));
-                            },
-                            child: const Text('Voltar para a tela anterior'))
-                      ],
-                    )
-                  : ElevatedButton(
-                      onPressed: () {
-                        try {
-                          if (namecontroller.text == '') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                duration: Duration(seconds: 3),
-                                content:
-                                    Text('Por favor digite o nome do produto '),
-                              ),
-                            );
-                          } else {
-                            productRepository.update(
-                              ProductModel(
-                                widget.id!,
-                                widget.listid,
-                                widget.listName,
-                                namecontroller.text,
-                                double.parse(emptyEqualZero(pricecontroller.text
-                                    .replaceFirst(RegExp(","), "."))),
-                                unitycontroller.text,
-                                double.parse(
-                                    emptyEqualZero(amountcontroller.text)),
-                                false,
-                              ),
-                            );
-                          }
-                        } catch (e) {
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  duration: Duration(seconds: 3),
+                                  content: Text(
+                                      'Por favor digite as frações do preço e da quantidade usando somente "." ou ",". Ex: 2.25 ou 2,25 '),
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text('Salvar')),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {});
+                          },
+                          child: const Text('Voltar para a tela anterior'))
+                    ],
+                  )
+                : ElevatedButton(
+                    onPressed: () {
+                      try {
+                        if (namecontroller.text == '') {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               duration: Duration(seconds: 3),
-                              content: Text(
-                                  'Por favor digite as frações do preço e da quantidade unsando "." ou ",". Ex: 2.25 '),
+                              content:
+                                  Text('Por favor digite o nome do produto '),
+                            ),
+                          );
+                        } else {
+                          productRepository.update(
+                            ProductModel(
+                              widget.id!,
+                              widget.listid,
+                              widget.listName,
+                              namecontroller.text,
+                              double.parse(emptyEqualZero(pricecontroller.text
+                                  .replaceFirst(RegExp(","), "."))),
+                              unitycontroller.text,
+                              double.parse(
+                                  emptyEqualZero(amountcontroller.text)),
+                              false,
                             ),
                           );
                         }
-                        transition(
-                            context,
-                            ProductPage(
-                              listName: widget.listName,
-                              listid: widget.listid,
-                            ));
-                      },
-                      child: const Text('salvar'))
-            ],
-          ),
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(seconds: 3),
+                            content: Text(
+                                'Por favor digite as frações do preço e da quantidade unsando "." ou ",". Ex: 2.25 '),
+                          ),
+                        );
+                      }
+                      transition(
+                          context,
+                          ProductPage(
+                            listName: widget.listName,
+                            listid: widget.listid,
+                          ));
+                    },
+                    child: const Text('salvar'))
+          ],
         ),
-      ]),
+      ),
     );
   }
 
